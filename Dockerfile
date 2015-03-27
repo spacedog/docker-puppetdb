@@ -20,7 +20,8 @@ RUN           yum -y -q install \
               yum -y -q clean all
 
 # Database setup
-ADD           database.ini /etc/puppetdb/conf.d/database.ini
+ADD           scripts/init_database.sh /my_init/10_init_database.sh
+
 
 # Configure puppetdb
 RUN           sed -i -e"s/^# host = .*/host = 0.0.0.0/; \
@@ -32,6 +33,7 @@ RUN           sed -i -e"s/^# host = .*/host = 0.0.0.0/; \
 EXPOSE 8080
 EXPOSE 8081
 
+# ADD start script
+ADD           scripts/start.sh /start.sh
 # Default CMD
-CMD /usr/sbin/puppetdb ssl-setup && \
-    /usr/sbin/puppetdb foreground
+CMD ["/start.sh"]
