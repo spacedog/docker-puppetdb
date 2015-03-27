@@ -22,12 +22,16 @@ RUN           yum -y -q install \
 # Database setup
 ADD           database.ini /etc/puppetdb/conf.d/database.ini
 
+# Configure puppetdb
+RUN           sed -i -e"s/^# host = .*/host = 0.0.0.0/; \
+                        s/^# ssl-host = .*/ssl-host = 0.0.0.0/; \
+                        s/^# ssl-port = .*/ssl-port = 8081/"  \
+                        /etc/puppetdb/conf.d/jetty.ini
+
 # Expose ports
 EXPOSE 8080
 EXPOSE 8081
 
-# Enrtypoint
-ENTRYPOINT ["/usr/sbin/puppetdb"]
-
 # Default CMD
-CMD ["foreground"]
+CMD /usr/sbin/puppetdb ssl-setup && \
+    /usr/sbin/puppetdb foreground
